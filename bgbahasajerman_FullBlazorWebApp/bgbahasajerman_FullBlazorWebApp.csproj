@@ -6,14 +6,14 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
-  <!-- Use local source on dev boxes -->
-  <ItemGroup Condition="'$(UseLocalLib)' == 'true'">
-    <ProjectReference Include="..\..\bgbahasajerman_RazorClassLibrary\bgbahasajerman_RazorClassLibrary.csproj" />
+  <!-- Windows local development: C:\Programmieren\ structure -->
+  <ItemGroup Condition="$([MSBuild]::IsOSPlatform('Windows'))">
+    <ProjectReference Include="..\bgbahasajerman_RazorClassLibrary\bgbahasajerman_RazorClassLibrary.csproj" />
   </ItemGroup>
 
-  <!-- Use packaged version on server -->
-  <ItemGroup Condition="'$(UseLocalLib)' != 'true'">
-    <PackageReference Include="bgbahasajerman.RazorClassLibrary" Version="1.0.0" />
+  <!-- Ubuntu/Linux server: /srv/projects/docker/ structure -->
+  <ItemGroup Condition="$([MSBuild]::IsOSPlatform('Linux'))">
+    <ProjectReference Include="..\..\bgbahasajerman_RazorClassLibrary\bgbahasajerman_RazorClassLibrary.csproj" />
   </ItemGroup>
 
   <!-- Always reference the client project and WASM server bits -->
