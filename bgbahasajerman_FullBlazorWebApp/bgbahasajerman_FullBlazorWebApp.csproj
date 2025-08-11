@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
@@ -6,8 +6,18 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
-  <ItemGroup>
+  <!-- Use local source on dev boxes -->
+  <ItemGroup Condition="'$(UseLocalLib)' == 'true'">
     <ProjectReference Include="..\..\bgbahasajerman_RazorClassLibrary\bgbahasajerman_RazorClassLibrary.csproj" />
+  </ItemGroup>
+
+  <!-- Use packaged version on server -->
+  <ItemGroup Condition="'$(UseLocalLib)' != 'true'">
+    <PackageReference Include="bgbahasajerman.RazorClassLibrary" Version="1.0.0" />
+  </ItemGroup>
+
+  <!-- Always reference the client project and WASM server bits -->
+  <ItemGroup>
     <ProjectReference Include="..\bgbahasajerman_FullBlazorWebApp.Client\bgbahasajerman_FullBlazorWebApp.Client.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.8" />
   </ItemGroup>

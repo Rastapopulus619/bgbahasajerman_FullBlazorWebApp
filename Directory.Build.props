@@ -1,0 +1,9 @@
+<Project>
+  <!-- Default for all machines: use the package -->
+  <PropertyGroup>
+    <UseLocalLib>false</UseLocalLib>
+  </PropertyGroup>
+
+  <!-- Optional local override file, not committed -->
+  <Import Project="Directory.Build.props.local" Condition="Exists('Directory.Build.props.local')" />
+</Project>
