@@ -425,3 +425,6 @@ docker-compose.override.yml
 # OS specific
 .DS_Store
 Thumbs.db
+
+# Local MSBuild override
+Directory.Build.props.local
