@@ -8,7 +8,7 @@
 
   <!-- Windows local development: C:\Programmieren\ structure -->
   <ItemGroup Condition="$([MSBuild]::IsOSPlatform('Windows'))">
-    <ProjectReference Include="C:\Programmieren\bgbahasajerman_RazorClassLibrary\bgbahasajerman_RazorClassLibrary.csproj" />
+    <ProjectReference Include="..\..\bgbahasajerman_RazorClassLibrary\bgbahasajerman_RazorClassLibrary.csproj" />
   </ItemGroup>
 
   <!-- Ubuntu/Linux server: /srv/projects/docker/ structure -->
