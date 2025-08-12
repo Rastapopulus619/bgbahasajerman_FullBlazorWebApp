@@ -11,3 +11,13 @@ services:
     restart: always
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - DOTNET_RUNNING_IN_CONTAINER=true
+    networks:
+      - blazor-network
+      - shared-net
+
+networks:
+  blazor-network:
+    driver: bridge
+  shared-net:
+    external: true

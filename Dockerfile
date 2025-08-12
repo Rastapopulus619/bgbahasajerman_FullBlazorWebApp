@@ -19,6 +19,8 @@ RUN dotnet publish bgbahasajerman_FullBlazorWebApp/bgbahasajerman_FullBlazorWebA
 FROM mcr.microsoft.com/dotnet/aspnet:9.0
 WORKDIR /app
 COPY --from=build /out .
-ENV ASPNETCORE_URLS=http://0.0.0.0:80
+ENV DOTNET_RUNNING_IN_CONTAINER=true
+ENV ASPNETCORE_ENVIRONMENT=Development
+ENV ASPNETCORE_URLS=http://+:80
 EXPOSE 80
 ENTRYPOINT ["dotnet", "bgbahasajerman_FullBlazorWebApp.dll"]

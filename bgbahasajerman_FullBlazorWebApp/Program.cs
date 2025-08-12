@@ -8,6 +8,35 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
 
+// API URL configuration - works for both Server and WebAssembly modes
+string apiBaseUrl;
+if (Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true")
+{
+    Console.WriteLine("Running in Docker");
+    // For Server components: use internal Docker network
+    apiBaseUrl = "http://bgbj-dataaccess-api:80/";
+}
+else
+{
+    Console.WriteLine("Running locally from Visual Studio");
+    // Local development: use Tailscale IP
+    apiBaseUrl = "http://100.117.149.44:8090/";
+}
+
+// HttpClient for Server-side components
+builder.Services.AddScoped(sp => new HttpClient
+{
+    BaseAddress = new Uri(apiBaseUrl),
+    Timeout = TimeSpan.FromSeconds(30)
+});
+
+// Additional HttpClient specifically for WebAssembly components
+builder.Services.AddHttpClient("WebAssemblyAPI", client =>
+{
+    client.BaseAddress = new Uri("http://100.117.149.44:8090/");
+    client.Timeout = TimeSpan.FromSeconds(30);
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -18,13 +47,10 @@ if (app.Environment.IsDevelopment())
 else
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
-
-
 app.UseAntiforgery();
 
 app.MapStaticAssets();

@@ -1,0 +1,54 @@
+<!-- filepath: bgbahasajerman_FullBlazorWebApp/Components/Pages/ApiStatus.razor -->
+@page "/apistatus"
+@rendermode InteractiveServer
+@inject HttpClient Http
+
+<PageTitle>API Status</PageTitle>
+
+<h1>API Status</h1>
+
+<p>This component demonstrates API connectivity.</p>
+
+<button class="btn btn-secondary" @onclick="CheckApi" disabled="@isLoading">
+    @(isLoading ? "Checking..." : "Check API")
+</button>
+
+@if (!string.IsNullOrEmpty(greeting))
+{
+    <div class="alert alert-success mt-3">
+        <strong>API Response:</strong> @greeting
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(error))
+{
+    <div class="alert alert-danger mt-3">
+        <strong>Error:</strong> @error
+    </div>
+}
+
+@code {
+    private bool isLoading;
+    private string? greeting;
+    private string? error;
+
+    private async Task CheckApi()
+    {
+        isLoading = true;
+        greeting = null;
+        error = null;
+        
+        try
+        {
+            greeting = await Http.GetStringAsync("Mock/greeting");
+        }
+        catch (Exception ex)
+        {
+            error = ex.Message;
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+}
