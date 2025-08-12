@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
@@ -6,8 +6,18 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
-  <ItemGroup>
+  <!-- Windows local development: C:\Programmieren\ structure -->
+  <ItemGroup Condition="$([MSBuild]::IsOSPlatform('Windows'))">
     <ProjectReference Include="..\..\bgbahasajerman_RazorClassLibrary\bgbahasajerman_RazorClassLibrary.csproj" />
+  </ItemGroup>
+
+  <!-- Ubuntu/Linux server: /srv/projects/docker/ structure -->
+  <ItemGroup Condition="$([MSBuild]::IsOSPlatform('Linux'))">
+    <ProjectReference Include="..\..\bgbahasajerman_RazorClassLibrary\bgbahasajerman_RazorClassLibrary.csproj" />
+  </ItemGroup>
+
+  <!-- Always reference the client project and WASM server bits -->
+  <ItemGroup>
     <ProjectReference Include="..\bgbahasajerman_FullBlazorWebApp.Client\bgbahasajerman_FullBlazorWebApp.Client.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.8" />
   </ItemGroup>

@@ -1,0 +1,6 @@
+<Project>
+  <!-- No longer using UseLocalLib - using OS-specific project references instead -->
+  
+  <!-- Optional local override file, not committed (for any additional local settings) -->
+  <Import Project="Directory.Build.props.local" Condition="Exists('Directory.Build.props.local')" />
+</Project>
