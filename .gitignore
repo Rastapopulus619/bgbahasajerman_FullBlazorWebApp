@@ -428,3 +428,6 @@ Thumbs.db
 
 # Local MSBuild override
 Directory.Build.props.local
+
+# Solution files
+*.sln
