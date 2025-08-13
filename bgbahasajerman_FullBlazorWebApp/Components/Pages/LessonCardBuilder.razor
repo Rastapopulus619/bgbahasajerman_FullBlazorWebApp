@@ -1,0 +1,79 @@
+﻿@page "/lesson-card-builder"
+@rendermode InteractiveServer
+@using System.Linq
+@using bgbahasajerman_RazorClassLibrary.Components
+@using bgbahasajerman_RazorClassLibrary.Models
+
+<h1>Lesson Card Builder</h1>
+
+<button type="button" @onclick="AddTable">+ Table</button>
+<button type="button" @onclick="RemoveLastTable" disabled="@(TableCount == 0)">− Remove last table</button>
+
+@for (int t = 0; t < TableCount; t++)
+{
+    var cells = tables[t].Slots?.Count ?? 0;
+    <div style="margin:.5rem 0;">
+        <strong>Table @(t + 1)</strong> — Cells: <span style="font-family:monospace">@cells</span>
+        <button type="button" @onclick="() => AddCell(t)">+ 1 cell</button>
+        <button type="button" @onclick="() => RemoveCell(t)" disabled="@(cells == 0)">− 1 cell</button>
+    </div>
+}
+
+<hr />
+
+<!-- Live preview (force remount when 'rev' changes) -->
+<LessonCard Tables="tables" Columns="2" @key="rev" />
+
+<!-- Debug -->
+<h4>Debug</h4>
+<ol>
+    @for (int t = 0; t < tables.Count; t++)
+    {
+        <li>Table @(t + 1) — Slots.Count=@(tables[t].Slots?.Count ?? 0)</li>
+    }
+</ol>
+
+@code {
+    private List<LessonCardTable> tables = new();
+    private int rev;
+
+    private int TableCount => tables.Count;
+
+    private void Bump()
+    {
+        tables = new(tables); // ensure new reference for child param diffing
+        rev++;                // force @key remount of child
+        StateHasChanged();
+    }
+
+    private void AddTable()
+    {
+        tables.Add(new LessonCardTable());
+        Bump();
+    }
+
+    private void RemoveLastTable()
+    {
+        if (tables.Count == 0) return;
+        tables.RemoveAt(tables.Count - 1);
+        Bump();
+    }
+
+    private void AddCell(int tableNumber)
+    {
+        if (tableNumber < 0 || tableNumber >= tables.Count) return;
+
+        tables[tableNumber].Slots ??= new();
+        tables[tableNumber].Slots.Add(new LessonCardTableDataModel());
+        Bump();
+    }
+
+    private void RemoveCell(int tableNumber)
+    {
+        if (tableNumber < 0 || tableNumber >= tables.Count) return;
+
+        var slots = tables[tableNumber].Slots ??= new();
+        if (slots.Count > 0) slots.RemoveAt(slots.Count - 1);
+        Bump();
+    }
+}
