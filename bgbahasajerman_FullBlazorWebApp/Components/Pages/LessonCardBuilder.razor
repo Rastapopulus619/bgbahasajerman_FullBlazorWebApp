@@ -1,79 +1,75 @@
 ﻿@page "/lesson-card-builder"
 @rendermode InteractiveServer
-@using System.Linq
 @using bgbahasajerman_RazorClassLibrary.Components
-@using bgbahasajerman_RazorClassLibrary.Models
 
-<h1>Lesson Card Builder</h1>
+<h1>Lesson Card Builder (Skeleton)</h1>
 
-<button type="button" @onclick="AddTable">+ Table</button>
-<button type="button" @onclick="RemoveLastTable" disabled="@(TableCount == 0)">− Remove last table</button>
+<!-- Section-level controls -->
+<button type="button" @onclick="AddSection">+ Add Section</button>
+<button type="button" @onclick="RemoveSection" disabled="@(cellCounts.Count == 0)">− Remove Section</button>
 
-@for (int t = 0; t < TableCount; t++)
+<p>Total sections: @cellCounts.Count</p>
+<p style="color:#666;font-size:.9rem">[page debug] cellCounts = @string.Join(",", cellCounts)</p>
+
+<hr />
+
+<!-- Per-section controls (each section has its own Add/Remove Cell) -->
+@for (int i = 0; i < cellCounts.Count; i++)
 {
-    var cells = tables[t].Slots?.Count ?? 0;
-    <div style="margin:.5rem 0;">
-        <strong>Table @(t + 1)</strong> — Cells: <span style="font-family:monospace">@cells</span>
-        <button type="button" @onclick="() => AddCell(t)">+ 1 cell</button>
-        <button type="button" @onclick="() => RemoveCell(t)" disabled="@(cells == 0)">− 1 cell</button>
+    <div style="margin:.4rem 0;">
+        <strong>Section @(i + 1)</strong> — Cells: <span style="font-family:monospace">@cellCounts[i]</span>
+        <button type="button" @onclick="() => AddCellTo(i)">+ Add cell</button>
+        <button type="button" @onclick="() => RemoveCellFrom(i)" disabled="@(cellCounts[i] == 0)">− Remove cell</button>
     </div>
 }
 
 <hr />
 
-<!-- Live preview (force remount when 'rev' changes) -->
-<LessonCard Tables="tables" Columns="2" @key="rev" />
+<!-- Pass counts; force remount with @key -->
+<LessonCardSkeleton CellCounts="@cellCounts.ToList()" @key="rev" />
 
-<!-- Debug -->
-<h4>Debug</h4>
-<ol>
-    @for (int t = 0; t < tables.Count; t++)
-    {
-        <li>Table @(t + 1) — Slots.Count=@(tables[t].Slots?.Count ?? 0)</li>
-    }
-</ol>
+
 
 @code {
-    private List<LessonCardTable> tables = new();
-    private int rev;
+    private List<int> cellCounts = new();
+    private int rev; // 👈 add this
 
-    private int TableCount => tables.Count;
-
-    private void Bump()
+    private void AddSection()
     {
-        tables = new(tables); // ensure new reference for child param diffing
-        rev++;                // force @key remount of child
+        cellCounts.Add(0);
+        Refresh();
+    }
+
+    private void RemoveSection()
+    {
+        if (cellCounts.Count == 0) return;
+        cellCounts.RemoveAt(cellCounts.Count - 1);
+        Refresh();
+    }
+
+    private void AddCellTo(int sectionIndex)
+    {
+        Console.WriteLine($"Adding cell to section {sectionIndex}");
+        if (!IsValidSection(sectionIndex)) return;
+        cellCounts[sectionIndex] += 1;
+        Refresh();
+    }
+
+    private void RemoveCellFrom(int sectionIndex)
+    {
+        if (!IsValidSection(sectionIndex)) return;
+        if (cellCounts[sectionIndex] > 0) cellCounts[sectionIndex] -= 1;
+        Refresh();
+    }
+
+    private bool IsValidSection(int index) => index >= 0 && index < cellCounts.Count;
+
+    private void Refresh()
+    {
+        // (re)create a new list reference, bump rev, re-render
+        cellCounts = new List<int>(cellCounts);
+        rev++;                  // 👈 this forces the child to remount
         StateHasChanged();
     }
-
-    private void AddTable()
-    {
-        tables.Add(new LessonCardTable());
-        Bump();
-    }
-
-    private void RemoveLastTable()
-    {
-        if (tables.Count == 0) return;
-        tables.RemoveAt(tables.Count - 1);
-        Bump();
-    }
-
-    private void AddCell(int tableNumber)
-    {
-        if (tableNumber < 0 || tableNumber >= tables.Count) return;
-
-        tables[tableNumber].Slots ??= new();
-        tables[tableNumber].Slots.Add(new LessonCardTableDataModel());
-        Bump();
-    }
-
-    private void RemoveCell(int tableNumber)
-    {
-        if (tableNumber < 0 || tableNumber >= tables.Count) return;
-
-        var slots = tables[tableNumber].Slots ??= new();
-        if (slots.Count > 0) slots.RemoveAt(slots.Count - 1);
-        Bump();
-    }
 }
+
