@@ -1,5 +1,6 @@
 ﻿@page "/lesson-card-builder"
 @rendermode InteractiveServer
+@using System.Linq
 @using bgbahasajerman_RazorClassLibrary.Components
 
 <h1>Lesson Card Builder (Skeleton)</h1>
@@ -16,10 +17,13 @@
 <!-- Per-section controls (each section has its own Add/Remove Cell) -->
 @for (int i = 0; i < cellCounts.Count; i++)
 {
+    var index = i;
+    <!-- capture a stable copy to avoid loop-variable capture -->
     <div style="margin:.4rem 0;">
-        <strong>Section @(i + 1)</strong> — Cells: <span style="font-family:monospace">@cellCounts[i]</span>
-        <button type="button" @onclick="() => AddCellTo(i)">+ Add cell</button>
-        <button type="button" @onclick="() => RemoveCellFrom(i)" disabled="@(cellCounts[i] == 0)">− Remove cell</button>
+        <strong>Section @(index + 1)</strong> —
+        Cells: <span style="font-family:monospace">@cellCounts[index]</span>
+        <button type="button" @onclick="() => AddCellTo(index)">+ Add cell</button>
+        <button type="button" @onclick="() => RemoveCellFrom(index)" disabled="@(cellCounts[index] == 0)">− Remove cell</button>
     </div>
 }
 
@@ -28,12 +32,11 @@
 <!-- Pass counts; force remount with @key -->
 <LessonCardSkeleton CellCounts="@cellCounts.ToList()" @key="rev" />
 
-
-
 @code {
     private List<int> cellCounts = new();
-    private int rev; // 👈 add this
+    private int rev;
 
+    // ===== Section methods =====
     private void AddSection()
     {
         cellCounts.Add(0);
@@ -47,10 +50,12 @@
         Refresh();
     }
 
+    // ===== Cell methods =====
     private void AddCellTo(int sectionIndex)
     {
-        Console.WriteLine($"Adding cell to section {sectionIndex}");
-        if (!IsValidSection(sectionIndex)) return;
+        Console.WriteLine($"AddCellTo called with index={sectionIndex}, count={cellCounts.Count}");
+        if (!IsValidSection(sectionIndex)) { Console.WriteLine(" -> invalid index"); return; }
+
         cellCounts[sectionIndex] += 1;
         Refresh();
     }
@@ -62,14 +67,14 @@
         Refresh();
     }
 
+    // ===== Helpers =====
     private bool IsValidSection(int index) => index >= 0 && index < cellCounts.Count;
 
     private void Refresh()
     {
-        // (re)create a new list reference, bump rev, re-render
+        // ensure child sees a change & remounts
         cellCounts = new List<int>(cellCounts);
-        rev++;                  // 👈 this forces the child to remount
+        rev++;
         StateHasChanged();
     }
 }
-
