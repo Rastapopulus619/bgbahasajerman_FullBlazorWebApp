@@ -1,0 +1,59 @@
+﻿@page "/mre-broken"
+@rendermode InteractiveServer
+@using bgbahasajerman_RazorClassLibrary.Components
+
+<h3>Cells MRE (broken)</h3>
+
+<button type="button" @onclick="AddSection">+ Add Section</button>
+<button type="button" @onclick="RemoveSection" disabled="@(cellCounts.Count==0)">− Remove Section</button>
+
+<p>Sections: @cellCounts.Count</p>
+
+@* Per-section controls — intentionally BROKEN closure *@
+@for (int i = 0; i < cellCounts.Count; i++)
+{
+    int index = i;
+
+    <div style="margin:.25rem 0">
+        @* <strong>Section @(i)</strong> — Cells: @cellCounts[i] *@
+        <button type="button" @onclick="() => AddCellTo(index)">+ Add cell</button>
+        <button type="button" @onclick="() => RemoveCellFrom(index)" disabled="@(cellCounts[index]==0)">− Remove cell</button>
+    </div>
+}
+
+<CellsMREView CellCounts="@cellCounts" />
+
+@code {
+    private List<int> cellCounts = new();
+
+    private void AddSection()
+    {
+        cellCounts.Add(0);
+        Console.WriteLine($"[AddSection] now {cellCounts.Count} sections"); // [hook: event-dispatch]
+    }
+
+    private void RemoveSection()
+    {
+        if (cellCounts.Count > 0)
+            cellCounts.RemoveAt(cellCounts.Count - 1);
+    }
+
+    private void AddCellTo(int sectionIndex)
+    {
+        Console.WriteLine($"[click] mutate sectionIndex={sectionIndex}");
+        Console.WriteLine();
+        Console.WriteLine($"[AddCellTo] sectionIndex={sectionIndex} totalSections={cellCounts.Count}");
+        if (sectionIndex < 0 || sectionIndex >= cellCounts.Count)
+        {
+            Console.WriteLine("[AddCellTo] INVALID INDEX (closure bug likely)"); // [hook: closure-capture]
+            return;
+        }
+        cellCounts[sectionIndex] += 1;
+    }
+
+    private void RemoveCellFrom(int sectionIndex)
+    {
+        if (sectionIndex < 0 || sectionIndex >= cellCounts.Count) return;
+        if (cellCounts[sectionIndex] > 0) cellCounts[sectionIndex] -= 1;
+    }
+}

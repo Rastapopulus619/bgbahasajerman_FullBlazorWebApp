@@ -9,8 +9,8 @@
 <button type="button" @onclick="AddSection">+ Add Section</button>
 <button type="button" @onclick="RemoveSection" disabled="@(cellCounts.Count == 0)">− Remove Section</button>
 
-<p>Total sections: @cellCounts.Count</p>
-<p style="color:#666;font-size:.9rem">[page debug] cellCounts = @string.Join(",", cellCounts)</p>
+@* <p>Total sections: @cellCounts.Count</p>
+<p style="color:#666;font-size:.9rem">[page debug] cellCounts = @string.Join(",", cellCounts)</p> *@
 
 <hr />
 
@@ -40,14 +40,14 @@
     private void AddSection()
     {
         cellCounts.Add(0);
-        Refresh();
+        // Refresh();
     }
 
     private void RemoveSection()
     {
         if (cellCounts.Count == 0) return;
         cellCounts.RemoveAt(cellCounts.Count - 1);
-        Refresh();
+        // Refresh();
     }
 
     // ===== Cell methods =====
@@ -57,24 +57,24 @@
         if (!IsValidSection(sectionIndex)) { Console.WriteLine(" -> invalid index"); return; }
 
         cellCounts[sectionIndex] += 1;
-        Refresh();
+        // Refresh();
     }
 
     private void RemoveCellFrom(int sectionIndex)
     {
         if (!IsValidSection(sectionIndex)) return;
         if (cellCounts[sectionIndex] > 0) cellCounts[sectionIndex] -= 1;
-        Refresh();
+        // Refresh();
     }
 
     // ===== Helpers =====
     private bool IsValidSection(int index) => index >= 0 && index < cellCounts.Count;
 
-    private void Refresh()
-    {
-        // ensure child sees a change & remounts
-        cellCounts = new List<int>(cellCounts);
-        rev++;
-        StateHasChanged();
-    }
+    // private void Refresh()
+    // {
+    //     
+    //     cellCounts = new List<int>(cellCounts);
+    //     rev++;
+    //     StateHasChanged();
+    // }
 }
