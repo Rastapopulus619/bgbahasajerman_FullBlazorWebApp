@@ -12,6 +12,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - DOTNET_RUNNING_IN_CONTAINER=true
+      - Api__BaseUrl=http://bgbj-dataaccess-api:80/   # <-- add this line
     networks:
       - blazor-network
       - shared-net
