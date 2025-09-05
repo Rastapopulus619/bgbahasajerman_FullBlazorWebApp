@@ -2,6 +2,7 @@
 @page "/apistatus"
 @rendermode InteractiveServer
 @inject HttpClient Http
+@using bgbahasajerman_RazorClassLibrary.Components.Controllers.ComboBoxes
 
 <PageTitle>API Status</PageTitle>
 
@@ -30,8 +31,10 @@
 <br />
 <br />
 
-<bgbahasajerman_RazorClassLibrary.Components.Components.Controllers.ComboBoxes.ComboBoxTest TItem="string"
-                                                                                            Items="@(new[] { "One", "Two", "Three" })" />
+<ComboBoxTest 
+    TItem="string" 
+    Items="Fruits" 
+    SelectedItemChanged="HandleFruitSelection" Placeholder="Select a fruit..." />
 
 <br />
 <br />
@@ -61,5 +64,15 @@
         {
             isLoading = false;
         }
+    }
+
+    private List<string> Fruits = new() { "Apple", "Banana", "Cherry", "Durian", "Mango", "Kiwi", "Asuh", "Watchmaker", "Immersiveness", "Spell", "Gingko"};
+    private string SelectedFruit;
+
+    private void HandleFruitSelection(string fruit)
+    {
+	    SelectedFruit = fruit;
+	    Console.WriteLine($"Selected: {fruit}");
+	    // Add logic, e.g., update UI or call API
     }
 }
